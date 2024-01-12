@@ -1,0 +1,19 @@
+<%= params[:host] %> ansible_ssh_port=<%= params[:port] || 22 %>
+
+[all]
+<%= params[:host] %>
+
+[application]
+<%= params[:host] %>
+
+[vm]
+<%= params[:host] %>
+
+[<%= params[:rails_env] %>]
+<%= params[:host] %>
+
+<% roles.each do |role| -%>
+[<%= role %>]
+<%= params[:host] %>
+
+<% end %>

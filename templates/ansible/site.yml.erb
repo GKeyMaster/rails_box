@@ -1,0 +1,43 @@
+---
+- hosts: vm
+  roles:
+    - swap
+
+- hosts: all
+  gather_facts: no
+  roles:
+    - { role: apt_proxy, when: use_apt_proxy }
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+<% params[:databases].each do |db| -%>
+- hosts: <%= db %>
+  roles:
+    - <%= db %>
+
+<% end %>
+
+- hosts: application
+  handlers:
+    <% params[:background_jobs].each do |bg| -%>
+    - include: roles/<%= bg %>/handlers/main.yml
+    <% end %>
+  roles:
+    - base
+    - { role: ruby, tags: ruby }
+    - vim
+    - webserver
+
+<% params[:background_jobs].each do |bg| -%>
+- hosts: <%= bg %>
+  handlers:
+    - include: roles/<%= server_role %>/handlers/main.yml
+  roles:
+    - base
+    - ruby
+    - { role: <%= bg %>, tags: <%= bg %> }
+
+<% end %>

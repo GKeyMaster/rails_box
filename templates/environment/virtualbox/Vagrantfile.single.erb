@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_version '>= 1.5'
+
+<%= render 'vagrant_plugins' %>
+
+Vagrant.configure('2') do |config|
+<% if params[:target] == 'virtualbox' %>
+<%= render 'virtualbox_config' %>
+<% end %>
+
+  config.ssh.forward_agent = true
+
+  if ansible_installed?
+    config.vm.provision 'ansible' do |ansible|
+      ansible.playbook = '../ansible/site.yml'
+      ansible.sudo = true
+      ansible.groups = {
+        'application' => %w(<%= params[:vm_name] %>),
+        'vm' => %w(<%= params[:vm_name] %>),
+        <% roles.each do |role| -%>
+        '<%= role %>' => %w(<%= params[:vm_name] %>),
+        <% end %>
+        'development:children' => %w(application vm <%= roles.join(' ') %>),
+      }
+      ansible.tags = ENV['TAGS']
+      ansible.raw_arguments = ENV['ANSIBLE_ARGS']
+    end
+  else
+    Dir['../shell/*.sh'].each do |script|
+      config.vm.provision 'shell', :path => script, :privileged => false, :args => ENV['ANSIBLE_ARGS']
+    end
+  end
+end

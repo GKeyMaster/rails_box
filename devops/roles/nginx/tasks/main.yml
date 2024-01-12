@@ -1,0 +1,48 @@
+---
+- name: Install nginx
+  apt: name=nginx
+  tags: nginx
+
+- name: Enable gzip
+  template: src=gzip.conf.j2 dest=/etc/nginx/conf.d/gzip.conf
+  notify: restart nginx
+  tags: nginx
+
+- name: Disable default nginx site
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify: restart nginx
+  tags: nginx
+
+- name: Copy nginx configuration
+  template: src=site.conf.j2 dest=/etc/nginx/sites-available/{{ server_name }}.conf
+  notify: restart nginx
+  tags: nginx
+
+- name: Symlink nginx configuration
+  file: src=/etc/nginx/sites-available/{{ server_name }}.conf dest=/etc/nginx/sites-enabled/{{ server_name }}.conf state=link
+  notify: restart nginx
+  tags: nginx
+
+- name: Create nginx.conf
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+  tags: nginx
+
+- name: Install certbot
+  get_url:
+    url: https://dl.eff.org/certbot-auto
+    dest: /usr/local/bin/certbot-auto
+    mode: 0755
+  tags:
+    - nginx
+    - ssl
+
+- name: Setup automatic SSL renewals
+  cron:
+    name: Renew SSL
+    minute: "0"
+    hour: "6,12"
+    job: "/usr/local/bin/certbot-auto renew --quiet --no-self-upgrade --renew-hook=\"service nginx restart\""
+  tags:
+    - nginx
+    - ssl

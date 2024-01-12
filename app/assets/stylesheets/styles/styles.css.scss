@@ -1,0 +1,101 @@
+.jumbotron {
+  @include dark-background;
+
+  padding: 30px 0px 35px;
+  margin-bottom: 0px;
+
+  h1 {
+    color: $logo-light-color-1;
+    span {
+      color: $logo-light-color-2;
+    }
+  }
+
+  h2 {
+    margin-top: 10px;
+    font-weight: 200;
+  }
+
+  p {
+    margin-top: 40px;
+    font-weight: 200;
+    strong {
+      font-weight: 400;
+    }
+    &.button {
+      a {
+        font-weight: 300;
+      }
+      text-align: center;
+    }
+  }
+}
+
+.step-number {
+  @include border-right-radius($border-radius);
+  h1 {
+    text-align: center;
+    font-size: 4em;
+    color: #fff;
+    margin: 10px 0px;
+  }
+}
+
+.step-number {
+  background-image: image-url('debut_dark.png');
+}
+
+.step {
+  padding: 25px 0px;
+}
+
+.download-step .col-lg-12 {
+  text-align: center;
+  button {
+    font-size: 2.5em;
+  }
+}
+
+input.ng-invalid[type=text] {
+  background-color: lighten($brand-danger, 30%);
+}
+
+.fork-me {
+  img {
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    border: 0;
+    z-index: $zindex-fork-me;
+  }
+}
+
+.droparea {
+  cursor: pointer;
+  margin-top: 2em;
+  border-radius: $border-radius;
+  padding: 1px;
+  background-color: $secondary-color;
+  color: $secondary-text-color;
+
+  &.dragover {
+    background-color: #fff;
+    color: #000;
+  }
+
+  p {
+    border: 1px dashed black;
+    border-radius: $border-radius;
+    text-align: center;
+    margin: 10px;
+    padding: 20px;
+    font-weight: 400;
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
+.notification {
+  margin-bottom: 0px;
+}

@@ -1,0 +1,12 @@
+@mixin dark-background {
+  background-image: image-url('debut_dark.png');
+  color: #ddd;
+
+  a:not(.btn) {
+    color: #fff;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

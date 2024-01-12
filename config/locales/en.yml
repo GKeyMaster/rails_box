@@ -1,0 +1,74 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  updated: Box has been updated
+  deleted: Box has been deleted
+  activerecord:
+    attributes:
+      box:
+        secure_id: 'Secure ID'
+  boxes:
+    form:
+      create: 'Create box'
+      edit: 'Update box'
+      back: 'Go back'
+      name: 'Name'
+      memory: 'Memory, Mb'
+      autoconf: 'Configure VM automatically for best performance'
+      add_environment: Add environment
+      add_database: 'Add database'
+      add_worker: 'Add worker'
+      docker: 'Docker (experimental version)'
+      share_type: Share type
+      nfs: NFS
+      virtualbox: VirtualBox
+      smb: SMB (Windows only)
+      graphics_kit: Graphics kit
+      qt_kit: QT kit
+      curl: curl
+      rvm: RVM
+      rbenv: rbenv
+      system_package: System package
+      ruby_version: Ruby version
+      nginx_unicorn: nginx + unicorn
+      nginx_puma: nginx + puma
+      nginx_passenger: nginx + passenger
+      postgresql: PostgreSQL
+      sidekiq: sidekiq
+      resque: resque
+      delayed_job: delayed_job
+      postgresql: PostgreSQL
+      mysql: MySQL
+      mongodb: MongoDB
+      redis: Redis
+      database_name: Database name
+      git_url: 'git repository URL'
+      git_branch: 'git branch'
+      remote_server: 'Remote server'
+      server_host: 'SSH host'
+      server_port: 'SSH port'
+      server_username: 'SSH username (with sudo access)'
+    show:
+      title: 'Your virtual box:'
+      download: 'Download'
+      edit: 'Edit'
+      delete: 'Delete'

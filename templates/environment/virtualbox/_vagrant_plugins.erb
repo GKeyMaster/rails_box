@@ -1,0 +1,28 @@
+def require_plugins(plugins = {})
+  needs_restart = false
+  plugins.each do |plugin, version|
+    next if Vagrant.has_plugin?(plugin)
+    cmd =
+      [
+        'vagrant plugin install',
+        plugin
+      ]
+    cmd << "--plugin-version #{version}" if version
+    system(cmd.join(' ')) || exit!
+    needs_restart = true
+  end
+  exit system('vagrant', *ARGV) if needs_restart
+end
+
+require_plugins \
+  'vagrant-bindfs' => '0.3.2'
+
+def ansible_installed?
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).any? do |p|
+    exts.any? do |ext|
+      full_path = File.join(p, "ansible-playbook#{ext}")
+      File.executable?(full_path) && File.file?(full_path)
+    end
+  end
+end

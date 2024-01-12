@@ -1,0 +1,26 @@
+body {
+  padding-top: $navbar-height;
+  background-color: $background-color;
+}
+
+footer {
+  @include dark-background;
+  padding: 50px 0px;
+
+  ul {
+    li {
+      margin-right: 20px;
+    }
+  }
+
+  p {
+    margin: 0px;
+  }
+}
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -$navbar-height;
+  visibility: hidden;
+}

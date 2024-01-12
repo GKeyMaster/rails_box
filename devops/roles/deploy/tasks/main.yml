@@ -1,0 +1,72 @@
+---
+- set_fact: this_release_ts={{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
+  tags: always
+
+- set_fact: this_release_path={{ releases_path }}/{{ this_release_ts }}
+
+- debug: msg='New release path {{ this_release_path }}'
+
+- name: Create new release dir
+  file: path={{ this_release_path }} state=directory
+
+- name: Update code
+  git: repo={{ git_url }} dest={{ this_release_path }} version={{ git_version }} accept_hostkey=yes
+  register: git
+
+- debug: msg='Updated repo from {{ git.before }} to {{ git.after }}'
+
+- name: Delete log directory
+  file: path={{ this_release_path }}/log state=absent
+
+- name: Symlink shared files
+  file: src={{ shared_path }}/{{ item }} dest={{ this_release_path }}/{{ item }} state=link force=yes
+  with_items:
+    - config/database.yml
+    - config/secrets.yml
+    - config/unicorn.rb
+    - log
+    - tmp
+    - vendor/bundle
+
+- name: Install bundle
+  command: 'bundle install --deployment --without="development test"'
+  args:
+    chdir: '{{ this_release_path }}'
+
+- name: Precompile assets
+  command: bundle exec rake assets:precompile chdir={{ this_release_path }}
+  environment:
+    RAILS_ENV: '{{ rails_env }}'
+
+- set_fact: backup_file_path={{ backups_path }}/{{ this_release_ts }}.sql
+  tags: backup
+
+- name: Backup database
+  shell: umask 077 && pg_dump -O -x railsbox_{{ rails_env }} > {{ backup_file_path }}
+  tags: backup
+
+- name: Archive backup
+  shell: gzip {{ backup_file_path }}
+  tags: backup
+
+- name: Migrate database
+  command: bundle exec rake db:migrate chdir={{ this_release_path }}
+  environment:
+    RAILS_ENV: '{{ rails_env }}'
+
+- name: Symlink new release
+  file: src={{ this_release_path }} dest={{ current_release_path }} state=link force=yes
+
+- name: Restart unicorn
+  command: sudo restart {{ app_name }}
+
+- name: Notify Rollbar
+  uri:
+    url: https://api.rollbar.com/api/1/deploy/
+    method: POST
+    body: access_token={{ rollbar_access_token }}&environment={{ rails_env }}&revision={{ git.after }}&local_username={{ lookup('pipe', 'whoami') }}
+
+- name: Cleanup
+  shell: "ls -1t {{ releases_path }}|tail -n +{{ keep_releases + 1 }}|xargs rm -rf"
+  args:
+    chdir: '{{ releases_path }}'
